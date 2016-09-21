@@ -21,8 +21,8 @@ void moveFlagUp(int servoPin)
 // Setup
 void setup () 
 {
-  Serial.begin (9600);
-  pinMode(LEDpin, OUTPUT);
+  Serial.begin (9600); //Begin serial connection with PC
+  pinMode(LEDpin, OUTPUT); //Make DPin "LEDpin" an output
 }
 
 //Main loop
