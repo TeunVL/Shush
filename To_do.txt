@@ -1,2 +1,4 @@
 -Ervoor zorgen dat er een lichtje aangaat na 10 seconden geluid.
 -Ervoor zorgen dat er een vlaggetje aangaat na 30 seconden geluid. 
+!- Microfoon fixen!
+-Casing maken voor de Shush.
