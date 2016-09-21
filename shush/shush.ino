@@ -1,3 +1,7 @@
+// Library's
+
+
+
 // Initilization
 int sensorPinA = A0; // select the input pin for Analog Mic
 int sensorPinD = 7; // select the input pin for Digital Mic
@@ -6,7 +10,10 @@ int sensorValueA = 0; // variable to store the Analog value coming from the sens
 int sensorValueD = 0; // variable to store the Digital value coming from the sensor
 
 /* ~~FUNCTIONS~~ */
-
+void moveFlagUp(int servoPin)
+{
+  /* CODE */
+}
 
 
 
