@@ -1,11 +1,15 @@
 // Library's
-
+#include <SoftwareSerial.h>
 
 
 // Initilization
+SoftwareSerial Genotronex(10,11);
+
+String bluetoothData = ""; //Data from Genotronex
+
 int sensorPinA = A0; // select the input pin for Analog Mic
 int sensorPinD = 7; // select the input pin for Digital Mic
-int LEDpin = 13; // select the pin for the LED
+int buttonPin = 2; // select the pin for the LED
 int sensorValueA = 0; // variable to store the Analog value coming from the sensor
 int sensorValueD = 0; // variable to store the Digital value coming from the sensor
 
@@ -15,18 +19,13 @@ void moveFlagUp(int servoPin)
   /* CODE */
 }
 
-
-
-
-// Setup
-void setup () 
+void sendMessage()
 {
-  Serial.begin (9600); //Begin serial connection with PC
-  pinMode(LEDpin, OUTPUT); //Make DPin "LEDpin" an output
+  Genotronex.println("!ALERT!");
+  delay(150);
 }
 
-//Main loop
-void loop () 
+void microphone()
 {
   sensorValueA = analogRead (sensorPinA);
   sensorValueD = digitalRead (sensorPinD);
@@ -34,12 +33,39 @@ void loop ()
   if (sensorValueD == 1)
   {
     Serial.println("TRUE!");
-    digitalWrite(LEDpin, HIGH);
+    digitalWrite(0, HIGH);
     delay(500);
   }
   else
   {
-    digitalWrite(LEDpin, LOW);
+    digitalWrite(0, LOW);
   }
   delay(100);
+}
+
+// Setup
+void setup () 
+{
+  Serial.begin (9600); //Begin serial connection with PC
+  pinMode(buttonPin, INPUT); //Make DPin "LEDpin" an output
+
+  Genotronex.begin(9600);
+  Genotronex.println("Device Connected");
+}
+
+//Main loop
+void loop () 
+{
+  if(Genotronex.available())
+  {
+   if(bluetoothData=='1'){
+    Genotronex.println("hoi");
+   }
+  }
+  
+  if(digitalRead(buttonPin))
+  {
+    Serial.println("ButtonPressed");
+    sendMessage();
+  }
 }
