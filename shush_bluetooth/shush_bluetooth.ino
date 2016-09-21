@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>// import the serial library
 
-SoftwareSerial Genotronex(0, 1);
+SoftwareSerial Genotronex(10, 11);
 int BluetoothData;
 
 void setup() {
