@@ -4,6 +4,7 @@
 
 // Initilization
 SoftwareSerial Genotronex(10,11);
+// Bluetooth on pin 11 and 10.
 
 String bluetoothData = ""; //Data from Genotronex
 
@@ -47,14 +48,11 @@ void bluetooth()
 {
   if(Genotronex.available())
   {
-   if(bluetoothData=='1'){
-    Genotronex.println("hoi");
-   }
+    Serial.println(bluetoothData);
   }
   
   if(digitalRead(buttonPin))
   {
-    Serial.println("ButtonPressed");
     sendMessage();
   }
 }
