@@ -1,5 +1,5 @@
 int piezo = 4;
-int button = 5;
+int button = 6;
 
 void setup() {
   // put your setup code here, to run once:
