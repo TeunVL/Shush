@@ -1,7 +1,6 @@
 // Library's
 #include <SoftwareSerial.h>
 
-
 // Initilization
 SoftwareSerial Genotronex(10,11);
 // Bluetooth on pin 11 and 10.
@@ -10,9 +9,68 @@ String bluetoothData = ""; //Data from Genotronex
 
 int sensorPinA = A0; // select the input pin for Analog Mic
 int sensorPinD = 7; // select the input pin for Digital Mic
+bool noise = false;
+unsigned long beginWindow = 0;
+unsigned long endWindow = 0;
+//int sizeWindow = 30000;
+int refreshRate = 100;
+
+bool noiseCounter[300];
+int x = 0;
+
 int buttonPin = 2; // select the pin for the LED
+bool prevButton = false;
+
 int sensorValueA = 0; // variable to store the Analog value coming from the sensor
 int sensorValueD = 0; // variable to store the Digital value coming from the sensor
+
+// Setup
+void setup () 
+{
+  Serial.begin (9600); //Begin serial connection with PC
+  pinMode(buttonPin, INPUT); //Make DPin "LEDpin" an output
+
+  Genotronex.begin(9600);
+  Genotronex.println("Device Connected");
+}
+
+//Main loop
+void loop () 
+{
+  beginWindow = millis();
+  microphone();
+
+//  if((beginWindow-endWindow) > sizeWindow){
+//    endWindow = beginWindow - sizeWindow;
+//  }
+
+  if((beginWindow-endWindow)>=refreshRate){
+    noiseCounter[x]=noise;
+    if(x>299){
+      x=0;
+    }
+    else{
+      x++;
+    }
+    endWindow = beginWindow;
+  }
+  
+  if(Genotronex.available())
+  {
+    bluetoothData=Genotronex.readString();
+    delay(10);
+    Serial.println(bluetoothData);
+  }
+  
+  if(digitalRead(buttonPin)== true && prevButton==false)
+  {
+    sendMessage();
+    prevButton = true;
+  }
+  else{
+    prevButton = false;
+  }
+}
 
 /* ~~FUNCTIONS~~ */
 void moveFlagUp(int servoPin)
@@ -28,47 +86,17 @@ void sendMessage()
 
 void microphone()
 {
-  sensorValueA = analogRead (sensorPinA);
-  sensorValueD = digitalRead (sensorPinD);
-  Serial.println ("print analog: " + String(sensorValueA));
-  if (sensorValueD == 1)
+  sensorValueA = analogRead(sensorPinA);
+  sensorValueD = digitalRead(sensorPinD);
+//  Serial.println(sensorValueA);
+  if (sensorValueD == HIGH)
   {
     Serial.println("TRUE!");
-    digitalWrite(0, HIGH);
-    delay(500);
+    noise = true;
   }
   else
   {
-    digitalWrite(0, LOW);
-  }
-  delay(100);
-}
-
-void bluetooth()
-{
-  if(Genotronex.available())
-  {
-    Serial.println(bluetoothData);
-  }
-  
-  if(digitalRead(buttonPin))
-  {
-    sendMessage();
+    noise = false;
   }
 }
 
-// Setup
-void setup () 
-{
-  Serial.begin (9600); //Begin serial connection with PC
-  pinMode(buttonPin, INPUT); //Make DPin "LEDpin" an output
-
-  Genotronex.begin(9600);
-  Genotronex.println("Device Connected");
-}
-
-//Main loop
-void loop () 
-{
-  bluetooth();
-}
