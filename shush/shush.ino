@@ -16,7 +16,7 @@ unsigned long endWindow = 0;
 int refreshRate = 100;
 
 bool noiseCounter[300];
-int x = 0;
+int arrayCounter = 0;
 
 int buttonPin = 2; // select the pin for the LED
 bool prevButton = false;
@@ -45,14 +45,15 @@ void loop ()
 //  }
 
   if((beginWindow-endWindow)>=refreshRate){
-    noiseCounter[x]=noise;
-    if(x>299){
-      x=0;
+    noiseCounter[arrayCounter]=noise;
+    if(arrayCounter>299){
+      arrayCounter=0;
     }
     else{
-      x++;
+      arrayCounter++;
     }
     endWindow = beginWindow;
+    Serial.println(getPercentage());
   }
   
   if(Genotronex.available())
@@ -91,12 +92,23 @@ void microphone()
 //  Serial.println(sensorValueA);
   if (sensorValueD == HIGH)
   {
-    Serial.println("TRUE!");
+//    Serial.println("TRUE!");
     noise = true;
   }
   else
   {
     noise = false;
   }
+}
+
+int getPercentage(){
+  int y= 0;
+  for(int i = 0; i<300; i++){
+    if(noiseCounter[i]==1){
+      y++;
+    }
+  }
+  int percentage = y;
+  return percentage;
 }
 
