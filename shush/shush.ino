@@ -43,18 +43,7 @@ void microphone()
   delay(100);
 }
 
-// Setup
-void setup () 
-{
-  Serial.begin (9600); //Begin serial connection with PC
-  pinMode(buttonPin, INPUT); //Make DPin "LEDpin" an output
-
-  Genotronex.begin(9600);
-  Genotronex.println("Device Connected");
-}
-
-//Main loop
-void loop () 
+void bluetooth()
 {
   if(Genotronex.available())
   {
@@ -68,4 +57,20 @@ void loop ()
     Serial.println("ButtonPressed");
     sendMessage();
   }
+}
+
+// Setup
+void setup () 
+{
+  Serial.begin (9600); //Begin serial connection with PC
+  pinMode(buttonPin, INPUT); //Make DPin "LEDpin" an output
+
+  Genotronex.begin(9600);
+  Genotronex.println("Device Connected");
+}
+
+//Main loop
+void loop () 
+{
+  bluetooth();
 }
