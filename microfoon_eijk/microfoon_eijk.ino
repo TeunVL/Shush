@@ -14,5 +14,7 @@ void loop() {
   if(digitalRead(pinD))
   {
     Serial.println("TRUE");
+    delay(100);
   }
+  delay(100);
 }
