@@ -16,7 +16,7 @@ int stage = 0;
 Servo serv;
 bool servoWrite = false;
 
-/*Bluetooth Stuff*/
+/*Bluetooth*/
 SoftwareSerial Genotronex(10,11);
 // Bluetooth on pin 11 and 10.
 String bluetoothData = ""; //Data from Genotronex
@@ -27,7 +27,7 @@ bool messageAlreadySend = false;
 int sensorPinD = 7; // select the input pin for Digital Mic
 int sensorValueD = 0; // variable to store the Digital value coming from the sensor
 
-/*drukSensor Stuff*/
+/*drukSensor*/
 int drukSensor = A1;
 int dValue = 0;
 int prevButton = false;
@@ -62,10 +62,6 @@ void loop ()
   beginWindow = millis();
   microphone();
 
-//  if((beginWindow-endWindow) > sizeWindow){
-//    endWindow = beginWindow - sizeWindow;
-//  }
-
   if((beginWindow-endWindow)>=refreshRate){
     noiseCounter[arrayCounter]=noise;
     if(arrayCounter>299){
@@ -79,7 +75,7 @@ void loop ()
     Serial.println(perc);
   }
   stage = getState(perc);
-  interact(stage, messageAlreadySend, servoWrite);
+  interact(stage, messageAlreadySend);
   
   if(Genotronex.available())
   {
@@ -99,7 +95,7 @@ void loop ()
 }
 
 /* ~~FUNCTIONS~~ */
-void interact(int z, bool messageSend, bool servoWritten)
+void interact(int z, bool messageSend)
 {
   switch(z)
   {
