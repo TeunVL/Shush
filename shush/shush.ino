@@ -14,7 +14,6 @@ int stage = 0;
 
 /*Servo*/
 Servo serv;
-bool servoWrite = false;
 
 /*Bluetooth*/
 SoftwareSerial Genotronex(10,11);
@@ -27,9 +26,8 @@ bool messageAlreadySend = false;
 int sensorPinD = 7; // select the input pin for Digital Mic
 int sensorValueD = 0; // variable to store the Digital value coming from the sensor
 
-/*drukSensor*/
-int drukSensor = A1;
-int dValue = 0;
+/*Button*/
+int buttonPin = 2;
 int prevButton = false;
 
 /*Time Window*/
@@ -37,7 +35,7 @@ bool noise = false;
 unsigned long beginWindow = 0;
 unsigned long endWindow = 0;
 //int sizeWindow = 30000;
-int refreshRate = 100;
+unsigned long refreshRate = 100;
 
 bool noiseCounter[300];
 int arrayCounter = 0;
@@ -49,6 +47,7 @@ void setup ()
   pinMode(LedG,OUTPUT);
   pinMode(LedO,OUTPUT);
   pinMode(LedR,OUTPUT);
+  pinMode(buttonPin, INPUT);
   serv.attach(9);
   serv.write(10);
   Genotronex.begin(9600);
@@ -58,7 +57,7 @@ void setup ()
 //Main loop
 void loop () 
 {
-  dValue = analogRead(drukSensor);
+  sensorValueD = digitalRead(sensorPinD);
   beginWindow = millis();
   microphone();
 
@@ -84,12 +83,13 @@ void loop ()
     Serial.println(bluetoothData);
   }
   
-  if(dValue >= 100 && prevButton==false)
+  if(digitalRead(buttonPin) && prevButton==false)
   {
     sendMessage();
     prevButton = true;
   }
-  else{
+  else
+  {
     prevButton = false;
   }
 }
@@ -108,7 +108,8 @@ void interact(int z, bool messageSend)
       digitalWrite(LedG, LOW);
       digitalWrite(LedO, HIGH);
       digitalWrite(LedR, LOW);
-      moveFlagDown();
+      serv.write(10);
+      Serial.println("DOWN");
       break;
     case 2:
       digitalWrite(LedG, LOW);
@@ -119,7 +120,8 @@ void interact(int z, bool messageSend)
       digitalWrite(LedG, LOW);
       digitalWrite(LedO, LOW);
       digitalWrite(LedR, HIGH);
-      moveFlagUp();
+      Serial.println("UP");
+      serv.write(100);
       messageAlreadySend = false;
       break;
      case 4:
@@ -161,7 +163,6 @@ int getState(int z)
 
 void moveFlagUp()
 {
-  
   serv.write(100);
 }
 
@@ -177,11 +178,8 @@ void sendMessage()
 
 void microphone()
 {
-  sensorValueD = digitalRead(sensorPinD);
-//  Serial.println(sensorValueA);
   if (sensorValueD == HIGH)
   {
-//    Serial.println("TRUE!");
     noise = true;
   }
   else
