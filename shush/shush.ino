@@ -1,14 +1,38 @@
 // Library's
 #include <SoftwareSerial.h>
+#include <Servo.h>
 
 // Initilization
+/*LED lights*/
+int LedG = 3;
+int LedO = 4;
+int LedR = 5;
+
+/*Set stat & perc*/
+int perc = 0;
+int stage = 0;
+
+/*Servo*/
+Servo serv;
+bool servoWrite = false;
+
+/*Bluetooth Stuff*/
 SoftwareSerial Genotronex(10,11);
 // Bluetooth on pin 11 and 10.
-
 String bluetoothData = ""; //Data from Genotronex
 
-int sensorPinA = A0; // select the input pin for Analog Mic
+bool messageAlreadySend = false;
+
+/*Microphone sensor*/
 int sensorPinD = 7; // select the input pin for Digital Mic
+int sensorValueD = 0; // variable to store the Digital value coming from the sensor
+
+/*drukSensor Stuff*/
+int drukSensor = A1;
+int dValue = 0;
+int prevButton = false;
+
+/*Time Window*/
 bool noise = false;
 unsigned long beginWindow = 0;
 unsigned long endWindow = 0;
@@ -18,18 +42,15 @@ int refreshRate = 100;
 bool noiseCounter[300];
 int arrayCounter = 0;
 
-int buttonPin = 2; // select the pin for the LED
-bool prevButton = false;
-
-int sensorValueA = 0; // variable to store the Analog value coming from the sensor
-int sensorValueD = 0; // variable to store the Digital value coming from the sensor
-
 // Setup
 void setup () 
 {
   Serial.begin (9600); //Begin serial connection with PC
-  pinMode(buttonPin, INPUT); //Make DPin "LEDpin" an output
-
+  pinMode(LedG,OUTPUT);
+  pinMode(LedO,OUTPUT);
+  pinMode(LedR,OUTPUT);
+  serv.attach(9);
+  serv.write(10);
   Genotronex.begin(9600);
   Genotronex.println("Device Connected");
 }
@@ -37,6 +58,7 @@ void setup ()
 //Main loop
 void loop () 
 {
+  dValue = analogRead(drukSensor);
   beginWindow = millis();
   microphone();
 
@@ -53,8 +75,11 @@ void loop ()
       arrayCounter++;
     }
     endWindow = beginWindow;
-    Serial.println(getPercentage());
+    perc = getPercentage();
+    Serial.println(perc);
   }
+  stage = getState(perc);
+  interact(stage, messageAlreadySend, servoWrite);
   
   if(Genotronex.available())
   {
@@ -63,7 +88,7 @@ void loop ()
     Serial.println(bluetoothData);
   }
   
-  if(digitalRead(buttonPin)== true && prevButton==false)
+  if(dValue >= 100 && prevButton==false)
   {
     sendMessage();
     prevButton = true;
@@ -74,20 +99,88 @@ void loop ()
 }
 
 /* ~~FUNCTIONS~~ */
-void moveFlagUp(int servoPin)
+void interact(int z, bool messageSend, bool servoWritten)
 {
-  /* CODE */
+  switch(z)
+  {
+    case 0:
+      digitalWrite(LedG, HIGH);
+      digitalWrite(LedO, LOW);
+      digitalWrite(LedR, LOW);
+      break;
+    case 1:
+      digitalWrite(LedG, LOW);
+      digitalWrite(LedO, HIGH);
+      digitalWrite(LedR, LOW);
+      moveFlagDown();
+      break;
+    case 2:
+      digitalWrite(LedG, LOW);
+      digitalWrite(LedO, LOW);
+      digitalWrite(LedR, HIGH);
+      break;
+     case 3:
+      digitalWrite(LedG, LOW);
+      digitalWrite(LedO, LOW);
+      digitalWrite(LedR, HIGH);
+      moveFlagUp();
+      messageAlreadySend = false;
+      break;
+     case 4:
+      digitalWrite(LedG, LOW);
+      digitalWrite(LedO, LOW);
+      digitalWrite(LedR, HIGH);
+      if(!messageSend)
+      {
+        sendMessage();
+        messageAlreadySend = true;
+      }
+      break;
+  }
+}
+
+int getState(int z)
+{
+  if(z < 30)
+  {
+    return 0;
+  }
+  else if(z >= 30 && z < 50)
+  {
+    return 1;
+  }
+  else if(z >= 50 && z < 100)
+  {
+    return 2;
+  }
+  else if(z >= 100 && z < 150)
+  {
+    return 3;
+  }
+  else if(z >= 150)
+  {
+    return 4;
+  }
+}
+
+void moveFlagUp()
+{
+  
+  serv.write(100);
+}
+
+void moveFlagDown()
+{
+  serv.write(10);
 }
 
 void sendMessage()
 {
   Genotronex.println("!ALERT!");
-  delay(150);
 }
 
 void microphone()
 {
-  sensorValueA = analogRead(sensorPinA);
   sensorValueD = digitalRead(sensorPinD);
 //  Serial.println(sensorValueA);
   if (sensorValueD == HIGH)
@@ -111,4 +204,3 @@ int getPercentage(){
   int percentage = y;
   return percentage;
 }
-
