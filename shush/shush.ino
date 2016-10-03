@@ -30,6 +30,7 @@ int sensorValueD = 0; // variable to store the Digital value coming from the sen
 int buttonPin = 2;
 bool buttonState = false;
 bool buttonPrevState = false; 
+unsigned long buttonTime = 0;
 
 /*Time Window*/
 bool noise = false;
@@ -37,7 +38,7 @@ unsigned long beginWindow = 0;
 unsigned long endWindow = 0;
 //int sizeWindow = 30000;
 unsigned long refreshRate = 100;
-unsigned long buttonTime = 0;
+
 
 bool noiseCounter[300];
 int arrayCounter = 0;
@@ -91,7 +92,7 @@ void loop ()
       buttonTime = beginWindow;
       sendMessage();
     }
-    buttonPrevState = buttonPin
+    buttonPrevState = buttonState;
   }
 }
 
