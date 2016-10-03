@@ -110,6 +110,7 @@ void interact(int z, bool messageSend)
       digitalWrite(LedG, LOW);
       digitalWrite(LedO, HIGH);
       digitalWrite(LedR, LOW);
+//    digitalWrite(servoPin, LOW);  
       serv.write(10);
       break;
     case 2:
@@ -121,6 +122,7 @@ void interact(int z, bool messageSend)
       digitalWrite(LedG, LOW);
       digitalWrite(LedO, LOW);
       digitalWrite(LedR, HIGH);
+//    digitalWrite(servoPin, HIGH);
       serv.write(100);
       messageAlreadySend = false;
       break;
