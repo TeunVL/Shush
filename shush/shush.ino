@@ -36,6 +36,7 @@ unsigned long beginWindow = 0;
 unsigned long endWindow = 0;
 //int sizeWindow = 30000;
 unsigned long refreshRate = 100;
+unsigned long buttonTime = 0;
 
 bool noiseCounter[300];
 int arrayCounter = 0;
@@ -79,18 +80,13 @@ void loop ()
   if(Genotronex.available())
   {
     bluetoothData=Genotronex.readString();
-    delay(10);
     Serial.println(bluetoothData);
   }
   
-  if(digitalRead(buttonPin) && prevButton==false)
+  if(digitalRead(buttonPin) && !((beginWindow - buttonTime) < 1500))
   {
+    buttonTime = beginWindow;
     sendMessage();
-    prevButton = true;
-  }
-  else
-  {
-    prevButton = false;
   }
 }
 
@@ -158,6 +154,10 @@ int getState(int z)
   else if(z >= 150)
   {
     return 4;
+  }
+  else
+  {
+    return 0;
   }
 }
 
