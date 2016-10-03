@@ -111,7 +111,6 @@ void interact(int z, bool messageSend)
       digitalWrite(LedO, HIGH);
       digitalWrite(LedR, LOW);
       serv.write(10);
-      Serial.println("DOWN");
       break;
     case 2:
       digitalWrite(LedG, LOW);
@@ -122,7 +121,6 @@ void interact(int z, bool messageSend)
       digitalWrite(LedG, LOW);
       digitalWrite(LedO, LOW);
       digitalWrite(LedR, HIGH);
-      Serial.println("UP");
       serv.write(100);
       messageAlreadySend = false;
       break;
