@@ -28,7 +28,8 @@ int sensorValueD = 0; // variable to store the Digital value coming from the sen
 
 /*Button*/
 int buttonPin = 2;
-int prevButton = false;
+bool buttonState = false;
+bool buttonPrevState = false; 
 
 /*Time Window*/
 bool noise = false;
@@ -59,6 +60,7 @@ void setup ()
 void loop () 
 {
   sensorValueD = digitalRead(sensorPinD);
+  buttonState = digitalRead(buttonPin);
   beginWindow = millis();
   microphone();
 
@@ -83,10 +85,13 @@ void loop ()
     Serial.println(bluetoothData);
   }
   
-  if(digitalRead(buttonPin) && !((beginWindow - buttonTime) < 1500))
+  if(buttonState != buttonPrevState && !((beginWindow - buttonTime) < 1500))
   {
-    buttonTime = beginWindow;
-    sendMessage();
+    if (buttonState == HIGH) {
+      buttonTime = beginWindow;
+      sendMessage();
+    }
+    buttonPrevState = buttonPin
   }
 }
 
