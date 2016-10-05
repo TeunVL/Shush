@@ -1,6 +1,6 @@
 // Library's
 #include <SoftwareSerial.h>
-#include <Servo.h>
+//#include <Servo.h>
 
 // Initilization
 /*LED lights*/
@@ -13,7 +13,8 @@ int perc = 0;
 int stage = 0;
 
 /*Servo*/
-Servo serv;
+//Servo serv;
+int servoPin = 9;
 
 /*Bluetooth*/
 SoftwareSerial Genotronex(10,11);
@@ -50,9 +51,10 @@ void setup ()
   pinMode(LedG,OUTPUT);
   pinMode(LedO,OUTPUT);
   pinMode(LedR,OUTPUT);
+  pinMode(servoPin, OUTPUT);
   pinMode(buttonPin, INPUT);
-  serv.attach(9);
-  serv.write(10);
+//  serv.attach(9);
+//  serv.write(10);
   Genotronex.begin(9600);
   Genotronex.println("Device Connected");
 }
@@ -110,8 +112,8 @@ void interact(int z, bool messageSend)
       digitalWrite(LedG, LOW);
       digitalWrite(LedO, HIGH);
       digitalWrite(LedR, LOW);
-//    digitalWrite(servoPin, LOW);  
-      serv.write(10);
+      digitalWrite(servoPin, LOW);  
+      //serv.write(10);
       break;
     case 2:
       digitalWrite(LedG, LOW);
@@ -122,8 +124,8 @@ void interact(int z, bool messageSend)
       digitalWrite(LedG, LOW);
       digitalWrite(LedO, LOW);
       digitalWrite(LedR, HIGH);
-//    digitalWrite(servoPin, HIGH);
-      serv.write(100);
+      digitalWrite(servoPin, HIGH);
+      //serv.write(100);
       messageAlreadySend = false;
       break;
      case 4:
@@ -169,12 +171,12 @@ int getState(int z)
 
 void moveFlagUp()
 {
-  serv.write(100);
+  //serv.write(100);
 }
 
 void moveFlagDown()
 {
-  serv.write(10);
+  //serv.write(10);
 }
 
 void sendMessage()
